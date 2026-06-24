@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS S3 Mastery — Learn in 3 Hours</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --aws-orange: #FF9900;
+    --aws-dark: #232F3E;
+    --aws-blue: #1A9AD9;
+    --cloud-white: #F8FAFB;
+    --slate: #4A5568;
+    --success: #38A169;
+    --accent-purple: #805AD5;
+    --card-bg: #FFFFFF;
+    --border: #E2E8F0;
+    --text: #1A202C;
+    --muted: #718096;
+    --code-bg: #1E2A3A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--cloud-white);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--aws-dark) 0%, #1a2a3a 50%, #0d1f2d 100%);
+    color: white;
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(255,153,0,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,153,0,0.2);
+    border: 1px solid rgba(255,153,0,0.4);
+    color: var(--aws-orange);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--aws-orange); }
+  .hero p {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 580px;
+    margin-bottom: 32px;
+  }
+  .hero-stats {
+    display: flex; gap: 32px; flex-wrap: wrap;
+  }
+  .stat {
+    text-align: left;
+  }
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--aws-orange);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── TABS / NAV ── */
+  .tab-nav {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .tab-nav-inner {
+    display: flex; overflow-x: auto; gap: 0;
+    padding: 0 24px;
+    scrollbar-width: none;
+  }
+  .tab-nav-inner::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    border: none; background: none; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--muted);
+    padding: 14px 16px;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: var(--aws-orange); }
+  .tab-btn.active { color: var(--aws-orange); border-bottom-color: var(--aws-orange); }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 48px 0 80px; }
+  .panel.active { display: block; }
+
+  /* ── SYLLABUS ── */
+  .syllabus-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px; margin-top: 32px;
+  }
+  .module-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--aws-orange));
+  }
+  .module-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+    border-color: var(--card-accent, var(--aws-orange));
+  }
+  .module-num {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .module-title {
+    font-size: 1rem; font-weight: 700; margin-bottom: 6px;
+  }
+  .module-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+  .module-time {
+    display: inline-block;
+    margin-top: 12px;
+    background: var(--cloud-white);
+    color: var(--slate);
+    font-size: 0.72rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* ── SECTION HEADINGS ── */
+  .section-eyebrow {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--aws-orange);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 1.9rem; font-weight: 700; margin-bottom: 10px;
+  }
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 560px; }
+
+  /* ── DIAGRAM / SVG BLOCKS ── */
+  .diagram-wrap {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 28px 0;
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 20px; text-align: center;
+  }
+
+  /* ── INFO CARDS ── */
+  .info-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+  .info-card.tip {
+    border-left: 4px solid var(--success);
+    background: #F0FFF4;
+  }
+  .info-card.warn {
+    border-left: 4px solid var(--aws-orange);
+    background: #FFFAF0;
+  }
+  .info-card.info {
+    border-left: 4px solid var(--aws-blue);
+    background: #EBF8FF;
+  }
+  .info-card-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .tip .info-card-label { color: var(--success); }
+  .warn .info-card-label { color: #C05621; }
+  .info .info-card-label { color: var(--aws-blue); }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    line-height: 1.7;
+    color: #e2e8f0;
+  }
+  .code-block .comment { color: #667eea; }
+  .code-block .key { color: #63b3ed; }
+  .code-block .val { color: #fbd38d; }
+  .code-block .cmd { color: #68d391; }
+
+  /* ── QUIZ ── */
+  .quiz-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin: 24px 0;
+  }
+  .quiz-q { font-weight: 600; margin-bottom: 16px; font-size: 1rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.18s;
+    background: var(--cloud-white);
+  }
+  .quiz-opt:hover { border-color: var(--aws-orange); background: #FFFAF0; }
+  .quiz-opt.correct { border-color: var(--success); background: #F0FFF4; color: #276749; }
+  .quiz-opt.wrong { border-color: #FC8181; background: #FFF5F5; color: #9B2C2C; }
+  .quiz-opt .opt-label {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+  }
+  .quiz-feedback { margin-top: 14px; font-size: 0.88rem; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { color: var(--success); font-weight: 600; }
+  .quiz-feedback.nope { color: #C53030; font-weight: 600; }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap {
+    background: var(--border);
+    border-radius: 99px; height: 8px; margin: 24px 0;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--aws-orange), #FFB74D);
+    transition: width 0.5s ease;
+  }
+
+  /* ── STEP LIST ── */
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 18px; margin: 24px 0; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .step-num {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--aws-dark); color: var(--aws-orange);
+    font-size: 0.82rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-body { padding-top: 5px; }
+  .step-body strong { display: block; font-weight: 700; margin-bottom: 3px; }
+  .step-body p { font-size: 0.9rem; color: var(--slate); }
+
+  /* ── TAG PILLS ── */
+  .tag {
+    display: inline-block;
+    background: rgba(255,153,0,0.12);
+    color: #C05621;
+    font-size: 0.72rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    margin: 2px;
+  }
+  .tag.blue { background: rgba(26,154,217,0.12); color: #2B6CB0; }
+  .tag.green { background: rgba(56,161,105,0.12); color: #276749; }
+  .tag.purple { background: rgba(128,90,213,0.12); color: #553C9A; }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%; border-collapse: collapse; margin: 20px 0;
+    font-size: 0.88rem;
+  }
+  .data-table th {
+    background: var(--aws-dark); color: white;
+    padding: 12px 16px; text-align: left;
+    font-weight: 600; font-size: 0.8rem; letter-spacing: 0.3px;
+  }
+  .data-table td {
+    padding: 11px 16px; border-bottom: 1px solid var(--border);
+  }
+  .data-table tr:hover td { background: #FAFAF8; }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb { font-size: 0.8rem; color: var(--muted); margin-bottom: 32px; }
+  .breadcrumb span { color: var(--aws-orange); }
+
+  /* ── BTN ── */
+  .btn {
+    display: inline-block; cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    padding: 11px 24px; border-radius: 8px; border: none;
+    transition: all 0.18s; text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--aws-orange); color: white;
+  }
+  .btn-primary:hover { background: #E68A00; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--aws-orange);
+    border: 1.5px solid var(--aws-orange);
+  }
+  .btn-ghost:hover { background: rgba(255,153,0,0.08); }
+
+  /* ── Analogy Box ── */
+  .analogy {
+    background: linear-gradient(135deg, #667eea15, #764ba215);
+    border: 1.5px dashed #764ba2;
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin: 20px 0;
+  }
+  .analogy-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--accent-purple); margin-bottom: 8px;
+  }
+  .analogy p { font-size: 0.93rem; color: var(--slate); }
+
+  h2 { font-size: 1.5rem; font-weight: 700; margin: 36px 0 12px; }
+  h3 { font-size: 1.15rem; font-weight: 700; margin: 28px 0 10px; }
+  p { margin-bottom: 12px; color: var(--slate); font-size: 0.95rem; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { color: var(--slate); font-size: 0.92rem; margin-bottom: 6px; }
+  strong { color: var(--text); }
+
+  .highlight { color: var(--aws-orange); font-weight: 700; }
+
+  /* SVG diagrams */
+  svg text { font-family: 'Space Grotesk', sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">☁️ AWS Learning Path · 2026 Edition</div>
+    <h1>Master <span>AWS S3</span> from Zero to Cloud Hero</h1>
+    <p>A guided, joyful 3-hour journey from "what is cloud?" to deploying real S3 storage — taught by a 10-year veteran, built for your brain.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Modules</span></div>
+      <div class="stat"><span class="stat-num">~3h</span><span class="stat-label">To Basics</span></div>
+      <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Diagrams</span></div>
+      <div class="stat"><span class="stat-num">18</span><span class="stat-label">Quiz Qs</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ STICKY NAV ═══════ -->
+<div class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" onclick="showTab('syllabus')">📋 Syllabus</button>
+    <button class="tab-btn" onclick="showTab('m1')">① Cloud 101</button>
+    <button class="tab-btn" onclick="showTab('m2')">② S3 Fundamentals</button>
+    <button class="tab-btn" onclick="showTab('m3')">③ Buckets & Objects</button>
+    <button class="tab-btn" onclick="showTab('m4')">④ Security & Access</button>
+    <button class="tab-btn" onclick="showTab('m5')">⑤ Storage Classes</button>
+    <button class="tab-btn" onclick="showTab('m6')">⑥ Hands-on Lab</button>
+    <button class="tab-btn" onclick="showTab('quiz')">🎯 Quiz</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--              SYLLABUS              -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-syllabus" class="panel active">
+<div class="container">
+  <br>
+  <div class="section-eyebrow">Your 3-Hour Roadmap</div>
+  <div class="section-title">Course Syllabus</div>
+  <div class="section-sub">Each module builds on the last. Click a card to jump to that module — start with Module 1 and ride the wave! 🏄</div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="mainProgress" style="width:0%"></div>
+  </div>
+
+  <div class="syllabus-grid">
+
+    <div class="module-card" style="--card-accent:#FF9900" onclick="showTab('m1')">
+      <div class="module-num">Module 01 · 20 min</div>
+      <div class="module-title">☁️ Cloud & AWS 101</div>
+      <div class="module-desc">Why cloud exists, what AWS is, and the global infrastructure behind it. Your "aha!" moment starts here.</div>
+      <span class="module-time">⏱ ~20 min</span>
+    </div>
+
+    <div class="module-card" style="--card-accent:#1A9AD9" onclick="showTab('m2')">
+      <div class="module-num">Module 02 · 25 min</div>
+      <div class="module-title">🗄️ S3 Fundamentals</div>
+      <div class="module-desc">What S3 is, the real-world analogy that makes it click, and how it fits inside AWS.</div>
+      <span class="module-time">⏱ ~25 min</span>
+    </div>
+
+    <div class="module-card" style="--card-accent:#38A169" onclick="showTab('m3')">
+      <div class="module-num">Module 03 · 30 min</div>
+      <div class="module-title">🪣 Buckets & Objects</div>
+      <div class="module-desc">The core building blocks of S3 — buckets, objects, keys, metadata, versioning, and lifecycle rules.</div>
+      <span class="module-time">⏱ ~30 min</span>
+    </div>
+
+    <div class="module-card" style="--card-accent:#805AD5" onclick="showTab('m4')">
+      <div class="module-num">Module 04 · 30 min</div>
+      <div class="module-title">🔐 Security & Access</div>
+      <div class="module-desc">IAM, bucket policies, ACLs, public vs private, and pre-signed URLs explained visually.</div>
+      <span class="module-time">⏱ ~30 min</span>
+    </div>
+
+    <div class="module-card" style="--card-accent:#E53E3E" onclick="showTab('m5')">
+      <div class="module-num">Module 05 · 25 min</div>
+      <div class="module-title">💰 Storage Classes</div>
+      <div class="module-desc">Standard, IA, Glacier, Intelligent-Tiering — pick the right class, save real money.</div>
+      <span class="module-time">⏱ ~25 min</span>
+    </div>
+
+    <div class="module-card" style="--card-accent:#D69E2E" onclick="showTab('m6')">
+      <div class="module-num">Module 06 · 40 min</div>
+      <div class="module-title">🛠️ Hands-On Lab</div>
+      <div class="module-desc">Create your first bucket, upload files, configure permissions, host a static website — all step by step.</div>
+      <span class="module-time">⏱ ~40 min</span>
+    </div>
+
+  </div>
+
+  <br>
+  <div class="info-card tip">
+    <div class="info-card-label">💡 Pro Tip from a 6-year AWS Engineer</div>
+    <p style="margin:0">Don't try to memorize everything. Focus on <strong>understanding the "why"</strong> behind each concept. The "how" becomes obvious once the mental model clicks. Read each module, then close it and explain it back to yourself — that's the fastest way to truly learn.</p>
+  </div>
+
+  <br>
+  <button class="btn btn-primary" onclick="showTab('m1')">🚀 Start Module 1 →</button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--           MODULE 1 — CLOUD 101     -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m1" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 01</span> · Cloud & AWS 101 · ⏱ ~20 min</div>
+
+  <div class="section-eyebrow">Module 01</div>
+  <div class="section-title">☁️ Why Cloud? Why AWS?</div>
+  <div class="section-sub">Before touching S3, let's build your mental model of what cloud computing actually means.</div>
+
+  <h2>The Old World vs The Cloud World</h2>
+
+  <div class="analogy">
+    <div class="analogy-label">🧠 Real-World Analogy</div>
+    <p>Imagine you need electricity. You could <strong>build your own power plant</strong> (on-premise servers) — buy generators, hire engineers, maintain fuel. OR you could just <strong>plug into the power grid</strong> (cloud) — pay only for what you use, no maintenance headaches. That's exactly what AWS is: a global power grid for computing.</p>
+  </div>
+
+  <!-- Diagram 1 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 1 — On-Premise vs Cloud</div>
+    <svg width="100%" viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left side -->
+      <rect x="10" y="20" width="320" height="200" rx="14" fill="#FFF5F5" stroke="#FC8181" stroke-width="2"/>
+      <text x="170" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#C53030">🏢 ON-PREMISE (Old Way)</text>
+      <!-- boxes -->
+      <rect x="30" y="65" width="80" height="50" rx="8" fill="#FC8181" opacity="0.7"/>
+      <text x="70" y="87" text-anchor="middle" font-size="10" fill="white" font-weight="600">Server 1</text>
+      <text x="70" y="102" text-anchor="middle" font-size="9" fill="white">$40K</text>
+      <rect x="125" y="65" width="80" height="50" rx="8" fill="#FC8181" opacity="0.7"/>
+      <text x="165" y="87" text-anchor="middle" font-size="10" fill="white" font-weight="600">Server 2</text>
+      <text x="165" y="102" text-anchor="middle" font-size="9" fill="white">$40K</text>
+      <rect x="220" y="65" width="80" height="50" rx="8" fill="#FC8181" opacity="0.5"/>
+      <text x="260" y="87" text-anchor="middle" font-size="10" fill="#9B2C2C" font-weight="600">Server 3</text>
+      <text x="260" y="102" text-anchor="middle" font-size="9" fill="#9B2C2C">idle 😴</text>
+      <!-- problems -->
+      <text x="30" y="145" font-size="10" fill="#C53030">❌ Upfront capital cost (CAPEX)</text>
+      <text x="30" y="163" font-size="10" fill="#C53030">❌ You manage hardware failures</text>
+      <text x="30" y="181" font-size="10" fill="#C53030">❌ Idle capacity = wasted money</text>
+      <text x="30" y="199" font-size="10" fill="#C53030">❌ Scaling takes weeks</text>
+
+      <!-- Right side -->
+      <rect x="390" y="20" width="320" height="200" rx="14" fill="#F0FFF4" stroke="#68D391" stroke-width="2"/>
+      <text x="550" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#276749">☁️ AWS CLOUD (New Way)</text>
+      <!-- cloud shape -->
+      <ellipse cx="550" cy="110" rx="80" ry="45" fill="#68D391" opacity="0.25"/>
+      <ellipse cx="510" cy="100" rx="50" ry="35" fill="#68D391" opacity="0.25"/>
+      <ellipse cx="590" cy="95" rx="50" ry="35" fill="#68D391" opacity="0.25"/>
+      <text x="550" y="105" text-anchor="middle" font-size="22">☁️</text>
+      <text x="550" y="128" text-anchor="middle" font-size="11" fill="#276749" font-weight="700">AWS Infrastructure</text>
+      <!-- benefits -->
+      <text x="410" y="175" font-size="10" fill="#276749">✅ Pay only what you use (OPEX)</text>
+      <text x="410" y="193" font-size="10" fill="#276749">✅ AWS manages hardware</text>
+      <text x="410" y="211" font-size="10" fill="#276749">✅ Scale in seconds</text>
+
+      <!-- Arrow -->
+      <path d="M 340 120 L 380 120" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arr)"/>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4A5568"/>
+        </marker>
+      </defs>
+      <text x="355" y="114" text-anchor="middle" font-size="9" fill="#4A5568">migrate</text>
+    </svg>
+  </div>
+
+  <h2>AWS Global Infrastructure</h2>
+  <p>AWS isn't just one data center. It's a <strong>global network</strong> of physical facilities.</p>
+
+  <!-- Diagram 2 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 2 — AWS Global Infrastructure Hierarchy</div>
+    <svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Level 1: Regions -->
+      <rect x="220" y="10" width="260" height="60" rx="12" fill="#232F3E"/>
+      <text x="350" y="36" text-anchor="middle" font-size="13" font-weight="700" fill="#FF9900">🌍 AWS REGION</text>
+      <text x="350" y="56" text-anchor="middle" font-size="10" fill="#aaa">e.g. us-east-1 (N. Virginia)</text>
+      <!-- connectors -->
+      <line x1="200" y1="70" x2="200" y2="120" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="350" y1="70" x2="350" y2="120" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="500" y1="70" x2="500" y2="120" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <!-- Level 2: AZs -->
+      <rect x="80" y="120" width="160" height="60" rx="10" fill="#1A9AD9" opacity="0.85"/>
+      <text x="160" y="146" text-anchor="middle" font-size="11" font-weight="700" fill="white">Availability Zone A</text>
+      <text x="160" y="163" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.75)">us-east-1a</text>
+      <rect x="270" y="120" width="160" height="60" rx="10" fill="#1A9AD9" opacity="0.85"/>
+      <text x="350" y="146" text-anchor="middle" font-size="11" font-weight="700" fill="white">Availability Zone B</text>
+      <text x="350" y="163" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.75)">us-east-1b</text>
+      <rect x="460" y="120" width="160" height="60" rx="10" fill="#1A9AD9" opacity="0.85"/>
+      <text x="540" y="146" text-anchor="middle" font-size="11" font-weight="700" fill="white">Availability Zone C</text>
+      <text x="540" y="163" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.75)">us-east-1c</text>
+      <!-- connectors to data centers -->
+      <line x1="120" y1="180" x2="120" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="200" y1="180" x2="200" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="320" y1="180" x2="320" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="380" y1="180" x2="380" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="500" y1="180" x2="500" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <line x1="580" y1="180" x2="580" y2="220" stroke="#CBD5E0" stroke-width="1.5" stroke-dasharray="4"/>
+      <!-- Data centers -->
+      <rect x="85" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="120" y="242" text-anchor="middle" font-size="9" fill="#4A5568">🖥️</text>
+      <text x="120" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data</text>
+      <text x="120" y="270" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Center</text>
+      <rect x="165" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="200" y="242" text-anchor="middle" font-size="9" fill="#4A5568">🖥️</text>
+      <text x="200" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data</text>
+      <text x="200" y="270" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Center</text>
+      <rect x="285" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="320" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data Ctr</text>
+      <rect x="365" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="400" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data Ctr</text>
+      <rect x="465" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="500" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data Ctr</text>
+      <rect x="545" y="220" width="70" height="50" rx="8" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="580" y="258" text-anchor="middle" font-size="9" fill="#4A5568" font-weight="600">Data Ctr</text>
+      <!-- labels bottom -->
+      <text x="350" y="295" text-anchor="middle" font-size="10" fill="#718096">Each AZ = 1–6 physical data centers, miles apart, connected by fiber</text>
+    </svg>
+  </div>
+
+  <div class="info-card info">
+    <div class="info-card-label">📌 Key Numbers (2026)</div>
+    <p style="margin:0">AWS has <strong>35+ Regions</strong>, <strong>110+ Availability Zones</strong>, and <strong>600+ Points of Presence</strong> around the world. S3 data is automatically replicated across multiple AZs in a region — that's why it boasts <strong>99.999999999% (11 nines) durability</strong>.</p>
+  </div>
+
+  <h2>AWS Service Categories — Where S3 Lives</h2>
+  <p>AWS has 200+ services. Here are the major categories so S3 makes sense in context:</p>
+
+  <table class="data-table">
+    <tr><th>Category</th><th>What It Does</th><th>Key Services</th></tr>
+    <tr><td>💾 <strong>Storage</strong></td><td>Store files, data, archives</td><td><span class="highlight">S3</span>, EBS, EFS, Glacier</td></tr>
+    <tr><td>🖥️ Compute</td><td>Run applications, code</td><td>EC2, Lambda, ECS</td></tr>
+    <tr><td>🗃️ Database</td><td>Store structured data</td><td>RDS, DynamoDB, Aurora</td></tr>
+    <tr><td>🌐 Networking</td><td>Connect and route traffic</td><td>VPC, CloudFront, Route53</td></tr>
+    <tr><td>🔐 Security</td><td>Control access & identity</td><td>IAM, KMS, Shield</td></tr>
+  </table>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('m2')">Next: S3 Fundamentals →</button>
+    <button class="btn btn-ghost" onclick="showTab('syllabus')">← Back to Syllabus</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--       MODULE 2 — S3 FUNDAMENTALS  -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m2" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 02</span> · S3 Fundamentals · ⏱ ~25 min</div>
+
+  <div class="section-eyebrow">Module 02</div>
+  <div class="section-title">🗄️ What IS Amazon S3?</div>
+
+  <div class="analogy">
+    <div class="analogy-label">🧠 The Perfect Analogy</div>
+    <p><strong>S3 = An infinite Google Drive for developers.</strong> Imagine a magic filing cabinet that never runs out of space, never loses a file, is accessible from anywhere in the world via the internet, and charges you only for what you actually store. That's S3. The "3" in S3 stands for <em>Simple Storage Service</em>.</p>
+  </div>
+
+  <h2>S3's Core Promise</h2>
+
+  <!-- Diagram 3 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 3 — S3 Core Properties</div>
+    <svg width="100%" viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Central S3 -->
+      <circle cx="350" cy="110" r="55" fill="#232F3E" stroke="#FF9900" stroke-width="3"/>
+      <text x="350" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="#FF9900">Amazon</text>
+      <text x="350" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#FF9900">S3</text>
+      <!-- spokes -->
+      <!-- Durability -->
+      <line x1="303" y1="75" x2="195" y2="30" stroke="#68D391" stroke-width="1.5"/>
+      <rect x="60" y="10" width="130" height="48" rx="10" fill="#F0FFF4" stroke="#68D391" stroke-width="1.5"/>
+      <text x="125" y="31" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">11 NINES DURABILITY</text>
+      <text x="125" y="48" text-anchor="middle" font-size="9" fill="#276749">99.999999999%</text>
+      <!-- Availability -->
+      <line x1="295" y1="110" x2="185" y2="110" stroke="#63B3ED" stroke-width="1.5"/>
+      <rect x="50" y="88" width="130" height="48" rx="10" fill="#EBF8FF" stroke="#63B3ED" stroke-width="1.5"/>
+      <text x="115" y="109" text-anchor="middle" font-size="10" font-weight="700" fill="#2B6CB0">99.99% AVAILABILITY</text>
+      <text x="115" y="126" text-anchor="middle" font-size="9" fill="#2B6CB0">Always accessible</text>
+      <!-- Scalable -->
+      <line x1="303" y1="145" x2="195" y2="190" stroke="#F6AD55" stroke-width="1.5"/>
+      <rect x="60" y="168" width="130" height="48" rx="10" fill="#FFFAF0" stroke="#F6AD55" stroke-width="1.5"/>
+      <text x="125" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="#C05621">INFINITELY SCALABLE</text>
+      <text x="115" y="206" text-anchor="middle" font-size="9" fill="#C05621">No storage limit</text>
+      <!-- Secure -->
+      <line x1="397" y1="75" x2="505" y2="30" stroke="#B794F4" stroke-width="1.5"/>
+      <rect x="510" y="10" width="130" height="48" rx="10" fill="#FAF5FF" stroke="#B794F4" stroke-width="1.5"/>
+      <text x="575" y="31" text-anchor="middle" font-size="10" font-weight="700" fill="#553C9A">SECURE BY DEFAULT</text>
+      <text x="575" y="48" text-anchor="middle" font-size="9" fill="#553C9A">Private until you open</text>
+      <!-- Cost -->
+      <line x1="405" y1="110" x2="515" y2="110" stroke="#FC8181" stroke-width="1.5"/>
+      <rect x="520" y="88" width="130" height="48" rx="10" fill="#FFF5F5" stroke="#FC8181" stroke-width="1.5"/>
+      <text x="585" y="109" text-anchor="middle" font-size="10" font-weight="700" fill="#C53030">PAY AS YOU GO</text>
+      <text x="585" y="126" text-anchor="middle" font-size="9" fill="#C53030">~$0.023 / GB / month</text>
+      <!-- Global -->
+      <line x1="397" y1="145" x2="505" y2="190" stroke="#4FD1C5" stroke-width="1.5"/>
+      <rect x="510" y="168" width="130" height="48" rx="10" fill="#E6FFFA" stroke="#4FD1C5" stroke-width="1.5"/>
+      <text x="575" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="#234E52">GLOBALLY ACCESSIBLE</text>
+      <text x="575" y="206" text-anchor="middle" font-size="9" fill="#234E52">HTTP/HTTPS API</text>
+    </svg>
+  </div>
+
+  <h2>What Can You Store in S3?</h2>
+  <p>S3 is <strong>object storage</strong> — it stores any file as a "blob" without caring about its structure. Think of it as storing files in a flat folder (no nested directories, just key-value).</p>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:12px; margin:20px 0;">
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">📷</div>
+      <strong>Images & Videos</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">Profile pics, thumbnails</p>
+    </div>
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">📄</div>
+      <strong>Documents</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">PDFs, Word files, CSVs</p>
+    </div>
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">🌐</div>
+      <strong>Static Websites</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">HTML/CSS/JS files</p>
+    </div>
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">💾</div>
+      <strong>Backups</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">DB dumps, archives</p>
+    </div>
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">📊</div>
+      <strong>Big Data</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">Logs, data lake files</p>
+    </div>
+    <div class="info-card" style="text-align:center; padding:16px;">
+      <div style="font-size:2rem;">🤖</div>
+      <strong>ML Datasets</strong>
+      <p style="font-size:0.8rem; margin:4px 0 0;">Training data, models</p>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-card-label">⚠️ S3 is NOT a File System</div>
+    <p style="margin:0">S3 is <strong>object storage</strong>, not block storage (that's EBS) or file storage (that's EFS). You can't "mount" S3 like a hard drive or run a database directly on it. It's designed for storing and retrieving files via API calls. Objects can be <strong>0 bytes to 5 TB</strong> each.</p>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('m3')">Next: Buckets & Objects →</button>
+    <button class="btn btn-ghost" onclick="showTab('m1')">← Cloud 101</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--      MODULE 3 — BUCKETS & OBJECTS  -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m3" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 03</span> · Buckets & Objects · ⏱ ~30 min</div>
+
+  <div class="section-eyebrow">Module 03</div>
+  <div class="section-title">🪣 Buckets & Objects Deep Dive</div>
+
+  <div class="analogy">
+    <div class="analogy-label">🧠 Analogy</div>
+    <p>A <strong>Bucket</strong> is like a labeled box you own. An <strong>Object</strong> is each item inside that box. The <strong>Key</strong> is the unique sticker/label on each item. Every item in every box is uniquely findable via: <code>box-name / item-label</code></p>
+  </div>
+
+  <!-- Diagram 4 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 4 — Bucket → Object Hierarchy</div>
+    <svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- AWS Account -->
+      <rect x="5" y="5" width="690" height="290" rx="14" fill="none" stroke="#CBD5E0" stroke-width="2" stroke-dasharray="6"/>
+      <text x="20" y="28" font-size="11" fill="#718096" font-weight="600">AWS Account</text>
+
+      <!-- Bucket 1 -->
+      <rect x="25" y="45" width="300" height="225" rx="12" fill="#EBF8FF" stroke="#1A9AD9" stroke-width="2"/>
+      <text x="45" y="72" font-size="11" font-weight="700" fill="#1A9AD9">🪣 my-company-assets</text>
+      <text x="45" y="89" font-size="9" fill="#4A5568">Region: us-east-1 · Private</text>
+      <!-- objects in bucket 1 -->
+      <rect x="40" y="100" width="270" height="42" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="55" y="118" font-size="10" font-weight="600" fill="#2B6CB0">📷 Object Key: images/logo.png</text>
+      <text x="55" y="134" font-size="9" fill="#718096">Size: 45 KB · Type: image/png · Modified: Today</text>
+      <rect x="40" y="150" width="270" height="42" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="55" y="168" font-size="10" font-weight="600" fill="#2B6CB0">📄 Object Key: docs/report.pdf</text>
+      <text x="55" y="184" font-size="9" fill="#718096">Size: 2.1 MB · Type: application/pdf</text>
+      <rect x="40" y="200" width="270" height="42" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="55" y="218" font-size="10" font-weight="600" fill="#2B6CB0">🎬 Object Key: videos/intro.mp4</text>
+      <text x="55" y="234" font-size="9" fill="#718096">Size: 120 MB · Type: video/mp4</text>
+
+      <!-- Bucket 2 -->
+      <rect x="375" y="45" width="300" height="130" rx="12" fill="#F0FFF4" stroke="#38A169" stroke-width="2"/>
+      <text x="395" y="72" font-size="11" font-weight="700" fill="#38A169">🪣 my-app-backups</text>
+      <text x="395" y="89" font-size="9" fill="#4A5568">Region: us-west-2 · Private</text>
+      <rect x="390" y="100" width="270" height="42" rx="8" fill="white" stroke="#C6F6D5"/>
+      <text x="405" y="118" font-size="10" font-weight="600" fill="#276749">💾 Object Key: 2026/db-backup.sql.gz</text>
+      <text x="405" y="134" font-size="9" fill="#718096">Size: 800 MB · Encrypted: Yes</text>
+
+      <!-- S3 URL example -->
+      <rect x="375" y="195" width="300" height="75" rx="12" fill="#FAF5FF" stroke="#B794F4" stroke-width="1.5"/>
+      <text x="395" y="218" font-size="10" font-weight="700" fill="#553C9A">🔗 How to Address an Object:</text>
+      <text x="395" y="238" font-size="8.5" fill="#553C9A" font-family="monospace">https://my-company-assets</text>
+      <text x="395" y="254" font-size="8.5" fill="#553C9A" font-family="monospace">.s3.amazonaws.com/images/logo.png</text>
+    </svg>
+  </div>
+
+  <h2>Bucket Rules You Must Know</h2>
+  <ul>
+    <li>Bucket names are <strong>globally unique</strong> across all AWS accounts worldwide (like domain names)</li>
+    <li>Names must be <strong>3–63 characters</strong>, lowercase, no underscores</li>
+    <li>Buckets live in a <strong>specific region</strong> — data physically stays there (unless you replicate it)</li>
+    <li>One account can have up to <strong>100 buckets</strong> by default (can be increased)</li>
+    <li><strong>Unlimited objects</strong> per bucket — no ceiling</li>
+  </ul>
+
+  <h2>Versioning — The Time Machine</h2>
+  <p>By default, uploading a file with the same name <em>overwrites</em> the old one. Enable <strong>Versioning</strong> to keep every historical version.</p>
+
+  <!-- Diagram 5 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 5 — S3 Versioning</div>
+    <svg width="100%" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
+      <!-- Timeline -->
+      <line x1="60" y1="90" x2="640" y2="90" stroke="#CBD5E0" stroke-width="2"/>
+      <!-- V1 -->
+      <circle cx="150" cy="90" r="12" fill="#38A169"/>
+      <text x="150" y="95" text-anchor="middle" font-size="9" fill="white" font-weight="700">v1</text>
+      <rect x="90" y="110" width="120" height="50" rx="8" fill="#F0FFF4" stroke="#38A169"/>
+      <text x="150" y="130" text-anchor="middle" font-size="9" fill="#276749" font-weight="600">report.pdf</text>
+      <text x="150" y="146" text-anchor="middle" font-size="8" fill="#718096">VersionId: abc123</text>
+      <text x="150" y="158" text-anchor="middle" font-size="8" fill="#718096">Jan 1, 2026</text>
+      <!-- V2 -->
+      <circle cx="350" cy="90" r="12" fill="#1A9AD9"/>
+      <text x="350" y="95" text-anchor="middle" font-size="9" fill="white" font-weight="700">v2</text>
+      <rect x="290" y="110" width="120" height="50" rx="8" fill="#EBF8FF" stroke="#1A9AD9"/>
+      <text x="350" y="130" text-anchor="middle" font-size="9" fill="#2B6CB0" font-weight="600">report.pdf</text>
+      <text x="350" y="146" text-anchor="middle" font-size="8" fill="#718096">VersionId: def456</text>
+      <text x="350" y="158" text-anchor="middle" font-size="8" fill="#718096">Mar 15, 2026</text>
+      <!-- V3 current -->
+      <circle cx="560" cy="90" r="14" fill="#FF9900" stroke="#232F3E" stroke-width="2"/>
+      <text x="560" y="95" text-anchor="middle" font-size="9" fill="white" font-weight="700">v3</text>
+      <text x="560" y="72" text-anchor="middle" font-size="8" fill="#FF9900" font-weight="700">← CURRENT</text>
+      <rect x="498" y="110" width="120" height="50" rx="8" fill="#FFFAF0" stroke="#FF9900" stroke-width="2"/>
+      <text x="558" y="130" text-anchor="middle" font-size="9" fill="#C05621" font-weight="600">report.pdf</text>
+      <text x="558" y="146" text-anchor="middle" font-size="8" fill="#718096">VersionId: ghi789</text>
+      <text x="558" y="158" text-anchor="middle" font-size="8" fill="#718096">Jun 23, 2026</text>
+      <!-- label -->
+      <text x="350" y="25" text-anchor="middle" font-size="10" fill="#718096">Each upload creates a new version. Old versions are kept. You can restore any version.</text>
+    </svg>
+  </div>
+
+  <h2>Lifecycle Rules — Automate Cost Savings</h2>
+  <p>You can set rules that <strong>automatically move or delete objects</strong> based on age — like a robot janitor for your storage.</p>
+
+  <!-- Diagram 6 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 6 — S3 Lifecycle Policy</div>
+    <svg width="100%" viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4A5568"/>
+        </marker>
+      </defs>
+      <!-- boxes -->
+      <rect x="10" y="30" width="130" height="60" rx="10" fill="#EBF8FF" stroke="#1A9AD9" stroke-width="2"/>
+      <text x="75" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#2B6CB0">S3 Standard</text>
+      <text x="75" y="73" text-anchor="middle" font-size="8.5" fill="#718096">Day 0–30</text>
+      <text x="75" y="86" text-anchor="middle" font-size="8" fill="#718096">$0.023/GB</text>
+
+      <path d="M 143 60 L 183 60" stroke="#4A5568" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="163" y="54" text-anchor="middle" font-size="8" fill="#718096">30 days</text>
+
+      <rect x="186" y="30" width="130" height="60" rx="10" fill="#F0FFF4" stroke="#38A169" stroke-width="2"/>
+      <text x="251" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">Standard-IA</text>
+      <text x="251" y="73" text-anchor="middle" font-size="8.5" fill="#718096">Day 30–90</text>
+      <text x="251" y="86" text-anchor="middle" font-size="8" fill="#718096">$0.0125/GB</text>
+
+      <path d="M 319 60 L 359 60" stroke="#4A5568" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="339" y="54" text-anchor="middle" font-size="8" fill="#718096">90 days</text>
+
+      <rect x="362" y="30" width="130" height="60" rx="10" fill="#FFFAF0" stroke="#F6AD55" stroke-width="2"/>
+      <text x="427" y="56" text-anchor="middle" font-size="10" font-weight="700" fill="#C05621">Glacier IR</text>
+      <text x="427" y="73" text-anchor="middle" font-size="8.5" fill="#718096">Day 90–365</text>
+      <text x="427" y="86" text-anchor="middle" font-size="8" fill="#718096">$0.004/GB</text>
+
+      <path d="M 495 60 L 535 60" stroke="#4A5568" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="515" y="54" text-anchor="middle" font-size="8" fill="#718096">1 year</text>
+
+      <rect x="538" y="30" width="130" height="60" rx="10" fill="#FFF5F5" stroke="#FC8181" stroke-width="2"/>
+      <text x="603" y="51" text-anchor="middle" font-size="10" font-weight="700" fill="#C53030">🗑️ Delete</text>
+      <text x="603" y="66" text-anchor="middle" font-size="8.5" fill="#718096">After 1 year</text>
+      <text x="603" y="82" text-anchor="middle" font-size="8" fill="#718096">No cost</text>
+      <text x="350" y="118" text-anchor="middle" font-size="9" fill="#718096">Savings Example: Moving 1TB from Standard to Glacier saves ~$19/month automatically</text>
+    </svg>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('m4')">Next: Security & Access →</button>
+    <button class="btn btn-ghost" onclick="showTab('m2')">← S3 Fundamentals</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--      MODULE 4 — SECURITY & ACCESS  -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m4" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 04</span> · Security & Access · ⏱ ~30 min</div>
+
+  <div class="section-eyebrow">Module 04</div>
+  <div class="section-title">🔐 Security & Access Control</div>
+
+  <div class="analogy">
+    <div class="analogy-label">🧠 Security Analogy</div>
+    <p>Think of S3 security like a <strong>bank vault system</strong>. The bank (AWS) has master keys. You (the account owner) have a vault key. You can give your employees (IAM users) partial keys. You can also put a lock-combination rule on the vault itself (bucket policy). And you can issue a temporary pass for a visitor (pre-signed URL).</p>
+  </div>
+
+  <!-- Diagram 7 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 7 — S3 Security Layers (Defense in Depth)</div>
+    <svg width="100%" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outermost: Account -->
+      <rect x="10" y="10" width="680" height="300" rx="16" fill="#F7FAFC" stroke="#CBD5E0" stroke-width="2"/>
+      <text x="30" y="35" font-size="11" font-weight="700" fill="#718096">Layer 1: AWS Account Boundary (Root level)</text>
+
+      <!-- Layer 2: IAM -->
+      <rect x="30" y="45" width="640" height="240" rx="14" fill="#EBF8FF" stroke="#1A9AD9" stroke-width="2"/>
+      <text x="50" y="68" font-size="11" font-weight="700" fill="#2B6CB0">Layer 2: IAM (Identity &amp; Access Management)</text>
+      <text x="50" y="83" font-size="9" fill="#4A5568">Who is allowed to touch AWS resources at all?</text>
+
+      <!-- IAM users row -->
+      <rect x="50" y="92" width="90" height="45" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="95" y="112" text-anchor="middle" font-size="9" font-weight="600" fill="#2B6CB0">👤 Dev</text>
+      <text x="95" y="127" text-anchor="middle" font-size="8" fill="#718096">IAM User</text>
+      <rect x="155" y="92" width="90" height="45" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="200" y="112" text-anchor="middle" font-size="9" font-weight="600" fill="#2B6CB0">👩‍💻 Admin</text>
+      <text x="200" y="127" text-anchor="middle" font-size="8" fill="#718096">IAM User</text>
+      <rect x="260" y="92" width="110" height="45" rx="8" fill="white" stroke="#BEE3F8"/>
+      <text x="315" y="112" text-anchor="middle" font-size="9" font-weight="600" fill="#2B6CB0">🤖 Lambda Fn</text>
+      <text x="315" y="127" text-anchor="middle" font-size="8" fill="#718096">IAM Role</text>
+
+      <!-- Layer 3: Bucket Policy -->
+      <rect x="50" y="150" width="600" height="115" rx="12" fill="#F0FFF4" stroke="#38A169" stroke-width="2"/>
+      <text x="70" y="173" font-size="11" font-weight="700" fill="#276749">Layer 3: Bucket Policy (JSON rules on the bucket)</text>
+      <text x="70" y="189" font-size="9" fill="#4A5568">What actions are allowed ON this specific bucket?</text>
+
+      <!-- Layer 4: Object ACL -->
+      <rect x="70" y="200" width="560" height="55" rx="10" fill="white" stroke="#F6AD55" stroke-width="2"/>
+      <text x="90" y="222" font-size="10" font-weight="700" fill="#C05621">Layer 4: Object ACL (per-object permissions)</text>
+      <text x="90" y="240" font-size="9" fill="#718096">Who can read/write this specific file? (Rarely used now — bucket policies preferred)</text>
+    </svg>
+  </div>
+
+  <h2>IAM Policies — The Rulebook</h2>
+  <p>IAM Policies are written in JSON. Here's what a typical S3 read-only policy looks like:</p>
+
+  <div class="code-block">
+<span class="comment">// IAM Policy: Allow read-only access to a specific S3 bucket</span>
+{
+  <span class="key">"Version"</span>: <span class="val">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [
+    {
+      <span class="key">"Effect"</span>: <span class="val">"Allow"</span>,       <span class="comment">// Allow or Deny</span>
+      <span class="key">"Action"</span>: [
+        <span class="val">"s3:GetObject"</span>,       <span class="comment">// Can download files</span>
+        <span class="val">"s3:ListBucket"</span>       <span class="comment">// Can list files</span>
+      ],
+      <span class="key">"Resource"</span>: [
+        <span class="val">"arn:aws:s3:::my-company-assets"</span>,   <span class="comment">// The bucket</span>
+        <span class="val">"arn:aws:s3:::my-company-assets/*"</span>  <span class="comment">// All objects inside</span>
+      ]
+    }
+  ]
+}
+  </div>
+
+  <!-- Diagram 8 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 8 — Public vs Private + Pre-Signed URLs</div>
+    <svg width="100%" viewBox="0 0 700 230" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#4A5568"/>
+        </marker>
+        <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#E53E3E"/>
+        </marker>
+        <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#38A169"/>
+        </marker>
+      </defs>
+      <!-- User/Browser -->
+      <rect x="10" y="90" width="90" height="50" rx="10" fill="#EDF2F7" stroke="#CBD5E0"/>
+      <text x="55" y="112" text-anchor="middle" font-size="12">🌐</text>
+      <text x="55" y="128" text-anchor="middle" font-size="9" fill="#4A5568">User/Browser</text>
+
+      <!-- Scenario 1: Public access blocked -->
+      <path d="M 103 100 L 240 80" stroke="#E53E3E" stroke-width="2" stroke-dasharray="5" marker-end="url(#arr4)"/>
+      <text x="170" y="73" text-anchor="middle" font-size="9" fill="#E53E3E">Direct request</text>
+      <rect x="243" y="55" width="130" height="55" rx="10" fill="#FFF5F5" stroke="#FC8181" stroke-width="2"/>
+      <text x="308" y="78" text-anchor="middle" font-size="10" font-weight="700" fill="#C53030">🔒 PRIVATE</text>
+      <text x="308" y="94" text-anchor="middle" font-size="8.5" fill="#C53030">Access Denied ❌</text>
+
+      <!-- Scenario 2: Pre-signed URL via server -->
+      <!-- user to server -->
+      <path d="M 103 120 L 240 130" stroke="#4A5568" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="165" y="140" text-anchor="middle" font-size="8" fill="#4A5568">1. Request file</text>
+      <rect x="243" y="115" width="130" height="55" rx="10" fill="#EBF8FF" stroke="#1A9AD9" stroke-width="2"/>
+      <text x="308" y="138" text-anchor="middle" font-size="10" font-weight="700" fill="#2B6CB0">🖥️ Your Server</text>
+      <text x="308" y="154" text-anchor="middle" font-size="8.5" fill="#718096">(has IAM credentials)</text>
+      <!-- server to S3 for signed URL -->
+      <path d="M 376 143 L 500 143" stroke="#38A169" stroke-width="2" marker-end="url(#arr5)"/>
+      <text x="438" y="136" text-anchor="middle" font-size="8" fill="#38A169">2. Generate signed URL</text>
+      <rect x="503" y="115" width="130" height="55" rx="10" fill="#F0FFF4" stroke="#38A169" stroke-width="2"/>
+      <text x="568" y="138" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">🔐 S3 Bucket</text>
+      <text x="568" y="154" text-anchor="middle" font-size="8.5" fill="#718096">Private Object</text>
+      <!-- server returns URL to user -->
+      <path d="M 243 150 L 115 160" stroke="#805AD5" stroke-width="2" stroke-dasharray="4" marker-end="url(#arr3)"/>
+      <text x="170" y="175" text-anchor="middle" font-size="8" fill="#805AD5">3. Temp URL (expires in 15min)</text>
+      <!-- user directly downloads -->
+      <path d="M 103 165 L 500 155" stroke="#D69E2E" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="350" y="195" text-anchor="middle" font-size="9" fill="#D69E2E">4. User downloads directly from S3 with temp URL ✅</text>
+
+      <text x="350" y="218" text-anchor="middle" font-size="9" fill="#718096">Pre-signed URLs are perfect for sharing private files temporarily without making the bucket public</text>
+    </svg>
+  </div>
+
+  <div class="info-card tip">
+    <div class="info-card-label">✅ Golden Rule of S3 Security</div>
+    <p style="margin:0">Start with <strong>everything private</strong> (default). Only open what you need. Use <strong>bucket policies</strong> over ACLs. Use <strong>IAM roles</strong> (not access keys) for your applications. Enable <strong>S3 Block Public Access</strong> at the account level — it's a safety net that prevents accidental public exposure.</p>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('m5')">Next: Storage Classes →</button>
+    <button class="btn btn-ghost" onclick="showTab('m3')">← Buckets & Objects</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--      MODULE 5 — STORAGE CLASSES    -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m5" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 05</span> · Storage Classes · ⏱ ~25 min</div>
+
+  <div class="section-eyebrow">Module 05</div>
+  <div class="section-title">💰 Storage Classes — Pay Smart</div>
+
+  <div class="analogy">
+    <div class="analogy-label">🧠 Analogy</div>
+    <p>Think of storage classes like <strong>hotel booking tiers</strong>. A suite (Standard) is instant, always ready, expensive. A standard room (Standard-IA) is available but you pay extra to check in. A hostel dorm (Glacier) takes 5 mins to get your key. A storage unit outside town (Deep Archive) takes 12 hours — but it's dirt cheap. Pick based on how <em>fast</em> you need the data.</p>
+  </div>
+
+  <!-- Diagram 9 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 9 — S3 Storage Class Comparison</div>
+    <svg width="100%" viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg">
+      <!-- Header -->
+      <rect x="5" y="5" width="690" height="35" rx="8" fill="#232F3E"/>
+      <text x="85" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="white">Storage Class</text>
+      <text x="250" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="white">Use Case</text>
+      <text x="420" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="white">Retrieval Speed</text>
+      <text x="580" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="white">Cost/GB/mo</text>
+      <!-- Rows -->
+      <!-- Standard -->
+      <rect x="5" y="45" width="690" height="50" rx="0" fill="#EBF8FF"/>
+      <rect x="5" y="45" width="5" height="50" rx="0" fill="#1A9AD9"/>
+      <text x="50" y="66" font-size="10" font-weight="700" fill="#2B6CB0">S3 Standard</text>
+      <text x="50" y="82" font-size="8.5" fill="#4A5568">Default class</text>
+      <text x="250" y="70" text-anchor="middle" font-size="9" fill="#4A5568">Frequently accessed data</text>
+      <text x="250" y="84" text-anchor="middle" font-size="8.5" fill="#718096">Websites, apps, videos</text>
+      <text x="420" y="72" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">⚡ Milliseconds</text>
+      <text x="580" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#2B6CB0">$0.023</text>
+      <!-- Standard-IA -->
+      <rect x="5" y="98" width="690" height="50" rx="0" fill="#F0FFF4"/>
+      <rect x="5" y="98" width="5" height="50" rx="0" fill="#38A169"/>
+      <text x="50" y="119" font-size="10" font-weight="700" fill="#276749">Standard-IA</text>
+      <text x="50" y="135" font-size="8.5" fill="#4A5568">Infrequent Access</text>
+      <text x="250" y="120" text-anchor="middle" font-size="9" fill="#4A5568">Accessed monthly</text>
+      <text x="250" y="134" text-anchor="middle" font-size="8.5" fill="#718096">DR copies, old logs</text>
+      <text x="420" y="125" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">⚡ Milliseconds</text>
+      <text x="580" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="#276749">$0.0125</text>
+      <!-- One Zone-IA -->
+      <rect x="5" y="151" width="690" height="50" rx="0" fill="#FFFFF0"/>
+      <rect x="5" y="151" width="5" height="50" rx="0" fill="#D69E2E"/>
+      <text x="50" y="172" font-size="10" font-weight="700" fill="#744210">One Zone-IA</text>
+      <text x="50" y="188" font-size="8.5" fill="#4A5568">Single AZ only</text>
+      <text x="250" y="173" text-anchor="middle" font-size="9" fill="#4A5568">Re-creatable data</text>
+      <text x="250" y="187" text-anchor="middle" font-size="8.5" fill="#718096">Thumbnails, transcode outputs</text>
+      <text x="420" y="178" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">⚡ Milliseconds</text>
+      <text x="580" y="178" text-anchor="middle" font-size="11" font-weight="700" fill="#D69E2E">$0.010</text>
+      <!-- Intelligent-Tiering -->
+      <rect x="5" y="204" width="690" height="50" rx="0" fill="#FAF5FF"/>
+      <rect x="5" y="204" width="5" height="50" rx="0" fill="#805AD5"/>
+      <text x="50" y="225" font-size="10" font-weight="700" fill="#553C9A">Intelligent-Tiering</text>
+      <text x="50" y="241" font-size="8.5" fill="#4A5568">Auto-moves tiers</text>
+      <text x="250" y="226" text-anchor="middle" font-size="9" fill="#4A5568">Unknown access patterns</text>
+      <text x="250" y="240" text-anchor="middle" font-size="8.5" fill="#718096">Any unknown workload</text>
+      <text x="420" y="231" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">⚡ Milliseconds</text>
+      <text x="575" y="226" text-anchor="middle" font-size="9" font-weight="700" fill="#553C9A">Auto (varies)</text>
+      <text x="575" y="240" text-anchor="middle" font-size="8" fill="#718096">+ $0.0025 monitoring</text>
+      <!-- Glacier IR -->
+      <rect x="5" y="257" width="690" height="40" rx="0" fill="#FFFAF0"/>
+      <rect x="5" y="257" width="5" height="40" rx="0" fill="#F6AD55"/>
+      <text x="50" y="278" font-size="10" font-weight="700" fill="#C05621">Glacier Instant Retrieval</text>
+      <text x="250" y="278" text-anchor="middle" font-size="9" fill="#4A5568">Quarterly access, archives</text>
+      <text x="420" y="278" text-anchor="middle" font-size="10" font-weight="700" fill="#276749">⚡ Milliseconds</text>
+      <text x="580" y="278" text-anchor="middle" font-size="11" font-weight="700" fill="#F6AD55">$0.004</text>
+      <!-- Glacier Deep Archive -->
+      <rect x="5" y="300" width="690" height="40" rx="0" fill="#FFF5F5"/>
+      <rect x="5" y="300" width="5" height="40" rx="0" fill="#FC8181"/>
+      <text x="50" y="321" font-size="10" font-weight="700" fill="#C53030">Glacier Deep Archive</text>
+      <text x="250" y="321" text-anchor="middle" font-size="9" fill="#4A5568">Compliance, 7+ yr retention</text>
+      <text x="420" y="321" text-anchor="middle" font-size="10" font-weight="700" fill="#C53030">🐢 12 hours</text>
+      <text x="580" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#C53030">$0.00099</text>
+    </svg>
+  </div>
+
+  <div class="info-card tip">
+    <div class="info-card-label">💡 Which Class Should I Use?</div>
+    <ul style="margin:0">
+      <li>Building an app? → <strong>Standard</strong></li>
+      <li>Storing logs you check monthly? → <strong>Standard-IA</strong></li>
+      <li>Not sure how often data is accessed? → <strong>Intelligent-Tiering</strong></li>
+      <li>Long-term backups you rarely need? → <strong>Glacier Instant Retrieval</strong></li>
+      <li>7-year compliance archives? → <strong>Glacier Deep Archive</strong></li>
+    </ul>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('m6')">Next: Hands-On Lab →</button>
+    <button class="btn btn-ghost" onclick="showTab('m4')">← Security & Access</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--      MODULE 6 — HANDS-ON LAB       -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-m6" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Module 06</span> · Hands-On Lab · ⏱ ~40 min</div>
+
+  <div class="section-eyebrow">Module 06 — Hands-On Lab</div>
+  <div class="section-title">🛠️ Your First S3 Setup</div>
+  <p>We'll create a bucket, upload a file, control access, and host a static website. Follow the steps in the AWS Console (free tier applies).</p>
+
+  <!-- Diagram 10 -->
+  <div class="diagram-wrap">
+    <div class="diagram-title">📊 Diagram 10 — What We're Building</div>
+    <svg width="100%" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#FF9900"/>
+        </marker>
+      </defs>
+      <!-- You -->
+      <rect x="10" y="75" width="100" height="50" rx="10" fill="#232F3E"/>
+      <text x="60" y="97" text-anchor="middle" font-size="12">👩‍💻</text>
+      <text x="60" y="113" text-anchor="middle" font-size="9" fill="white">You (Console)</text>
+      <!-- Arrow 1 -->
+      <path d="M 113 100 L 195 100" stroke="#FF9900" stroke-width="2" marker-end="url(#arr6)"/>
+      <text x="154" y="92" text-anchor="middle" font-size="8" fill="#FF9900">Create</text>
+      <!-- S3 Bucket -->
+      <rect x="198" y="60" width="120" height="80" rx="12" fill="#EBF8FF" stroke="#1A9AD9" stroke-width="2"/>
+      <text x="258" y="92" text-anchor="middle" font-size="12">🪣</text>
+      <text x="258" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#2B6CB0">my-first-bucket</text>
+      <text x="258" y="122" text-anchor="middle" font-size="8" fill="#718096">+ index.html</text>
+      <!-- Arrow 2 -->
+      <path d="M 320 100 L 402 100" stroke="#FF9900" stroke-width="2" marker-end="url(#arr6)"/>
+      <text x="360" y="92" text-anchor="middle" font-size="8" fill="#FF9900">Enable</text>
+      <text x="360" y="110" text-anchor="middle" font-size="8" fill="#FF9900">Static Web</text>
+      <!-- CloudFront / Public URL -->
+      <rect x="405" y="60" width="130" height="80" rx="12" fill="#F0FFF4" stroke="#38A169" stroke-width="2"/>
+      <text x="470" y="92" text-anchor="middle" font-size="12">🌐</text>
+      <text x="470" y="108" text-anchor="middle" font-size="9" font-weight="700" fill="#276749">Public Website</text>
+      <text x="470" y="122" text-anchor="middle" font-size="8" fill="#718096">http://my-first-bucket...</text>
+      <!-- Arrow 3 -->
+      <path d="M 537 100 L 618 100" stroke="#FF9900" stroke-width="2" marker-end="url(#arr6)"/>
+      <text x="577" y="92" text-anchor="middle" font-size="8" fill="#FF9900">Users</text>
+      <text x="577" y="110" text-anchor="middle" font-size="8" fill="#FF9900">Visit</text>
+      <!-- World -->
+      <rect x="622" y="75" width="68" height="50" rx="10" fill="#FAF5FF" stroke="#805AD5" stroke-width="1.5"/>
+      <text x="656" y="97" text-anchor="middle" font-size="12">🌍</text>
+      <text x="656" y="113" text-anchor="middle" font-size="9" fill="#553C9A">Anyone</text>
+    </svg>
+  </div>
+
+  <h2>Step-by-Step Lab</h2>
+
+  <ul class="steps">
+    <li class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Sign in to AWS Console</strong>
+        <p>Go to <code>console.aws.amazon.com</code>. Search "S3" in the services search bar and open it.</p>
+      </div>
+    </li>
+    <li class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Create a Bucket</strong>
+        <p>Click "Create bucket" → Enter a globally unique name like <code>your-name-learning-s3-2026</code> → Choose region <code>us-east-1</code> → <strong>Leave all other defaults</strong> → Click "Create bucket".</p>
+      </div>
+    </li>
+    <li class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Upload Your First Object</strong>
+        <p>Click your bucket → "Upload" → "Add files" → Pick any image or text file from your computer → Click "Upload". That's it! Your file is now in S3.</p>
+      </div>
+    </li>
+    <li class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Enable Static Website Hosting</strong>
+        <p>Go to bucket → "Properties" tab → Scroll to "Static website hosting" → Enable it → Set index document to <code>index.html</code> → Save.</p>
+      </div>
+    </li>
+    <li class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Create & Upload index.html</strong>
+        <p>Create a file called <code>index.html</code> on your laptop with the code below, then upload it to your bucket.</p>
+      </div>
+    </li>
+  </ul>
+
+  <div class="code-block">
+<span class="comment">&lt;!-- Save this as index.html and upload to your S3 bucket --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;<span class="val">My First S3 Website 🚀</span>&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: Arial; text-align: center; 
+           background: #232F3E; color: white; padding: 60px; }
+    h1 { color: <span class="val">#FF9900</span>; font-size: 3rem; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;☁️ Hello from S3!&lt;/h1&gt;
+  &lt;p&gt;I built this with Amazon S3 Static Website Hosting&lt;/p&gt;
+  &lt;p&gt;Bucket: <span class="val">your-bucket-name</span> · Region: <span class="val">us-east-1</span>&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+  </div>
+
+  <ul class="steps">
+    <li class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <strong>Add a Bucket Policy to Make it Public</strong>
+        <p>Go to "Permissions" tab → First, turn off "Block all public access" → Then go to "Bucket policy" and paste the JSON below (replace <code>your-bucket-name</code>):</p>
+      </div>
+    </li>
+  </ul>
+
+  <div class="code-block">
+{
+  <span class="key">"Version"</span>: <span class="val">"2012-10-17"</span>,
+  <span class="key">"Statement"</span>: [
+    {
+      <span class="key">"Sid"</span>: <span class="val">"PublicReadGetObject"</span>,
+      <span class="key">"Effect"</span>: <span class="val">"Allow"</span>,
+      <span class="key">"Principal"</span>: <span class="val">"*"</span>,         <span class="comment">// * = anyone in the world</span>
+      <span class="key">"Action"</span>: <span class="val">"s3:GetObject"</span>,
+      <span class="key">"Resource"</span>: <span class="val">"arn:aws:s3:::YOUR-BUCKET-NAME/*"</span>
+    }
+  ]
+}
+  </div>
+
+  <ul class="steps">
+    <li class="step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <strong>Visit Your Website!</strong>
+        <p>Go back to "Properties" → "Static website hosting" → Click the website endpoint URL. Your S3-hosted website is live! 🎉</p>
+      </div>
+    </li>
+  </ul>
+
+  <div class="info-card tip">
+    <div class="info-card-label">🎉 Congratulations!</div>
+    <p style="margin:0">You just created a bucket, uploaded objects, configured permissions, and hosted a website — all on AWS S3! When you're done, <strong>delete the bucket</strong> to avoid any charges (S3 free tier gives 5GB/month but it's good practice).</p>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:28px;">
+    <button class="btn btn-primary" onclick="showTab('quiz')">Take the Quiz! 🎯</button>
+    <button class="btn btn-ghost" onclick="showTab('m5')">← Storage Classes</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!--              QUIZ                  -->
+<!-- ═══════════════════════════════════ -->
+<div id="tab-quiz" class="panel">
+<div class="container">
+  <div class="breadcrumb">📋 <span>Quiz</span> · Test Your Knowledge</div>
+  <div class="section-eyebrow">Knowledge Check</div>
+  <div class="section-title">🎯 AWS S3 Quiz</div>
+  <div class="section-sub">6 questions. No pressure — this is for you, not graded. See how much stuck!</div>
+
+  <div class="progress-bar-wrap" style="margin:20px 0;">
+    <div class="progress-bar" id="quizProgress" style="width:0%"></div>
+  </div>
+  <div id="quizScore" style="font-size:0.88rem; color:var(--muted); margin-bottom:24px;">0 / 6 answered</div>
+
+  <!-- Q1 -->
+  <div class="quiz-card" id="q1">
+    <div class="quiz-q">Q1. What does S3 stand for?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q1',this,false)"><span class="opt-label">A</span> Simple Server Storage</div>
+      <div class="quiz-opt" onclick="answer('q1',this,true)"><span class="opt-label">B</span> Simple Storage Service</div>
+      <div class="quiz-opt" onclick="answer('q1',this,false)"><span class="opt-label">C</span> Secure Scalable Storage</div>
+      <div class="quiz-opt" onclick="answer('q1',this,false)"><span class="opt-label">D</span> Standard S3 System</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-card" id="q2">
+    <div class="quiz-q">Q2. Bucket names in S3 must be ___</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q2',this,false)"><span class="opt-label">A</span> Unique within your AWS account only</div>
+      <div class="quiz-opt" onclick="answer('q2',this,true)"><span class="opt-label">B</span> Globally unique across all AWS accounts</div>
+      <div class="quiz-opt" onclick="answer('q2',this,false)"><span class="opt-label">C</span> Unique within a region only</div>
+      <div class="quiz-opt" onclick="answer('q2',this,false)"><span class="opt-label">D</span> Can have any name, no restrictions</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-card" id="q3">
+    <div class="quiz-q">Q3. What is the durability of S3 Standard?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q3',this,false)"><span class="opt-label">A</span> 99.9% (three nines)</div>
+      <div class="quiz-opt" onclick="answer('q3',this,false)"><span class="opt-label">B</span> 99.99% (four nines)</div>
+      <div class="quiz-opt" onclick="answer('q3',this,true)"><span class="opt-label">C</span> 99.999999999% (eleven nines)</div>
+      <div class="quiz-opt" onclick="answer('q3',this,false)"><span class="opt-label">D</span> 100% guaranteed</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-card" id="q4">
+    <div class="quiz-q">Q4. You have old log files accessed once a year for compliance. Which storage class fits best?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q4',this,false)"><span class="opt-label">A</span> S3 Standard</div>
+      <div class="quiz-opt" onclick="answer('q4',this,false)"><span class="opt-label">B</span> S3 Standard-IA</div>
+      <div class="quiz-opt" onclick="answer('q4',this,true)"><span class="opt-label">C</span> S3 Glacier Deep Archive</div>
+      <div class="quiz-opt" onclick="answer('q4',this,false)"><span class="opt-label">D</span> S3 One Zone-IA</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-card" id="q5">
+    <div class="quiz-q">Q5. A pre-signed URL is used for…</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q5',this,false)"><span class="opt-label">A</span> Making a bucket permanently public</div>
+      <div class="quiz-opt" onclick="answer('q5',this,true)"><span class="opt-label">B</span> Granting temporary access to a private S3 object</div>
+      <div class="quiz-opt" onclick="answer('q5',this,false)"><span class="opt-label">C</span> Encrypting objects at rest</div>
+      <div class="quiz-opt" onclick="answer('q5',this,false)"><span class="opt-label">D</span> Enabling versioning on a bucket</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="quiz-card" id="q6">
+    <div class="quiz-q">Q6. What does S3 Versioning protect you from?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer('q6',this,false)"><span class="opt-label">A</span> DDoS attacks on your bucket</div>
+      <div class="quiz-opt" onclick="answer('q6',this,false)"><span class="opt-label">B</span> Reducing storage costs</div>
+      <div class="quiz-opt" onclick="answer('q6',this,true)"><span class="opt-label">C</span> Accidental deletion or overwriting of objects</div>
+      <div class="quiz-opt" onclick="answer('q6',this,false)"><span class="opt-label">D</span> Cross-region replication failures</div>
+    </div>
+    <div class="quiz-feedback" id="fb-q6"></div>
+  </div>
+
+  <div id="finalResult" style="display:none; margin-top:32px;">
+    <div class="info-card tip">
+      <div class="info-card-label">🎉 Quiz Complete!</div>
+      <div id="finalMsg"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;">
+    <button class="btn btn-primary" onclick="showTab('syllabus')">← Back to Syllabus</button>
+  </div>
+</div>
+</div>
+
+<script>
+  let answered = {};
+  let score = 0;
+
+  function showTab(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    // highlight correct tab btn
+    const btns = document.querySelectorAll('.tab-btn');
+    const labels = ['syllabus','m1','m2','m3','m4','m5','m6','quiz'];
+    const idx = labels.indexOf(id);
+    if (idx !== -1 && btns[idx]) btns[idx].classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+    updateProgress(id);
+  }
+
+  function updateProgress(id) {
+    const order = ['m1','m2','m3','m4','m5','m6'];
+    const idx = order.indexOf(id);
+    if (idx !== -1) {
+      const pct = Math.round(((idx+1)/order.length)*100);
+      document.getElementById('mainProgress').style.width = pct + '%';
+    }
+  }
+
+  const feedbacks = {
+    'q1': { ok: "Correct! Simple Storage Service — the 3 S's!", no: "Not quite. S3 = Simple Storage Service." },
+    'q2': { ok: "Exactly! Globally unique — like a domain name, no two buckets anywhere can share the same name.", no: "Wrong. Bucket names must be globally unique across ALL AWS accounts worldwide." },
+    'q3': { ok: "Eleven nines! That means if you stored 10 million objects, you'd expect to lose one file every 10,000 years. Incredible!", no: "Not quite. S3 Standard boasts 99.999999999% (11 nines) durability." },
+    'q4': { ok: "Perfect! Deep Archive is for rarely-accessed compliance data. It costs ~$0.001/GB — almost free!", no: "Think cost. For once-a-year access, you want the cheapest long-term archive: Glacier Deep Archive." },
+    'q5': { ok: "Correct! Pre-signed URLs give a time-limited URL to a private object. Great for sharing files without making the bucket public.", no: "Pre-signed URLs grant temporary, time-limited access to a private S3 object without changing bucket permissions." },
+    'q6': { ok: "Spot on! Versioning keeps every previous version of an object, so you can recover from accidental deletes or overwrites.", no: "Versioning protects against accidental deletion or overwriting by keeping historical versions of every object." },
+  };
+
+  function answer(qid, el, correct) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const card = document.getElementById(qid);
+    const opts = card.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    el.classList.add(correct ? 'correct' : 'wrong');
+    // highlight correct if they got it wrong
+    if (!correct) {
+      opts.forEach(o => {
+        if (o.onclick.toString().includes('true')) o.classList.add('correct');
+      });
+    }
+    if (correct) score++;
+    const fb = document.getElementById('fb-' + qid);
+    fb.textContent = (correct ? '✅ ' : '❌ ') + feedbacks[qid][correct ? 'ok' : 'no'];
+    fb.className = 'quiz-feedback show ' + (correct ? 'ok' : 'nope');
+    // update score display
+    const total = Object.keys(answered).length;
+    document.getElementById('quizScore').textContent = `${total} / 6 answered · ${score} correct`;
+    document.getElementById('quizProgress').style.width = (total / 6 * 100) + '%';
+    if (total === 6) showFinal();
+  }
+
+  function showFinal() {
+    const el = document.getElementById('finalResult');
+    const msg = document.getElementById('finalMsg');
+    el.style.display = 'block';
+    const msgs = [
+      [6, "🏆 Perfect Score! You're ready for AWS certification prep!"],
+      [5, "🌟 Excellent! One miss — but you clearly get it. Review the one you missed!"],
+      [4, "👍 Solid! A couple of gaps — re-read those modules and you'll nail it."],
+      [3, "📚 Good effort! Go back through modules 3–5 and retake the quiz."],
+      [0, "💪 Don't worry! This is learning, not a test. Re-read the modules and come back!"]
+    ];
+    const m = msgs.find(([min]) => score >= min);
+    msg.innerHTML = `<strong>You scored ${score}/6.</strong> ${m[1]}`;
+  }
+</script>
+<!-- ADD THIS before </body> in your index.html --> 
+ <div id="email-bar" style=" position: fixed; bottom: 0; left: 0; right: 0; background: #232F3E; border-top: 2px solid #FF9900; padding: 14px 24px; display: flex; align-items: center; gap: 12px; justify-content: center; z-index: 9999; font-family: 'Space Grotesk', sans-serif; flex-wrap: wrap;"> <span style="color:white; font-size:0.9rem; font-weight:600;"> ☁️ Get the full AWS course free — join 200+ learners: </span> <form action="YOUR_MAILCHIMP_URL_HERE" method="post" target="_blank" style="display:flex; gap:8px;"> <input type="email" name="EMAIL" placeholder="your@email.com" required style=" padding: 8px 14px; border-radius: 6px; border: none; font-size: 0.9rem; width: 220px;"> <button type="submit" style=" background: #FF9900; color: #000; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem;"> Get Free Course </button> </form> <button onclick="document.getElementById('email-bar').style.display='none'" style="background:none; border:none; color:#8b949e; cursor:pointer; font-size:1.2rem;">✕</button> </div>
+</body>
+</html>
